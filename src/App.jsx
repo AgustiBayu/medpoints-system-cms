@@ -16,8 +16,8 @@ function App() {
   }
 
   return (
-    <ul>              
-      <h1>hello agusti </h1>
+    <ul>            
+      <h1>hi, agusti bayu</h1>        
       {instruments.map((instrument) => (
         <li key={instrument.name}>{instrument.name}</li>
       ))}
