@@ -1,28 +1,51 @@
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import React, { useState, useEffect } from "react";
+import LoginPage from "./pages/LoginPage";
+import HomePage from "./pages/HomePage";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { supabase } from "./assets/api/supabaseClient";
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 
-const supabase = createClient("https://illmqbrdabvqrgslbmqu.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsbG1xYnJkYWJ2cXJnc2xibXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzMDU3NzAsImV4cCI6MjA1NTg4MTc3MH0.JjmvB5EwGIWJM1cj6KKVAdxHJjoSR0o3o7NG4MW3dFs");
+const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-function App() {
-  const [instruments, setInstruments] = useState([]);
+    useEffect(() => {
+        // Cek status login saat pertama kali aplikasi dimuat
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                setIsAuthenticated(true);
+            }
+        };
+        checkAuth();
+    }, []);
 
-  useEffect(() => {
-    getInstruments();
-  }, []);
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+    };
 
-  async function getInstruments() {
-    const { data } = await supabase.from("instruments").select();
-    setInstruments(data);
-  }
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        setIsAuthenticated(false);
+    };
 
-  return (
-    <ul>        
-      <h1>hi agusti</h1>
-      {instruments.map((instrument) => (
-        <li key={instrument.name}>{instrument.name}</li>
-      ))}
-    </ul>
-  );
-}
+    return (
+        <Router>
+            <Routes>
+                <Route 
+                    path="/" 
+                    element={
+                        isAuthenticated ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
+                    } 
+                />
+                <Route 
+                    path="/home" 
+                    element={
+                        isAuthenticated ? <HomePage onLogout={handleLogout} /> : <Navigate to="/" />
+                    } 
+                />
+            </Routes>
+        </Router>
+    );
+};
 
 export default App;
