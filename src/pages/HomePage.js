@@ -20,7 +20,7 @@ const HomePage = ({ onLogout }) => {
 
     return (
         <div>
-            <h1>Welcome to Home Page!</h1>
+            <h1>Welcome to Home Page Medpoints System!</h1>
             {email && <p>Logged in as: {email}</p>}
             <button onClick={onLogout}>Logout</button>
         </div>
